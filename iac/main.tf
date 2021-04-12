@@ -1,5 +1,10 @@
 terraform {
-  //  backend "azurerm" {}
+  backend "azurerm" {
+    storage_account_name = "sumgantfstatelab"
+    container_name       = "sumgantfstatecontainer"
+    key                  = "labstate.tfstate"
+    access_key           = "G+1eOX80lQb+2fXpkEYQQy/RLAP+CZ5IVG4venNwhUArBuymfVW/wavbSYOKbTR2h5RFNng15TdD6AURYq64pw=="
+  }
 }
 
 provider "azurerm" {
