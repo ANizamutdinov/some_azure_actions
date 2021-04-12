@@ -15,7 +15,7 @@ locals {
 }
 
 resource "azurerm_resource_group" "rg" {
-  location = "NorthEU"
+  location = "northeurope"
   name     = join("-", ["rg", local.env])
 }
 
