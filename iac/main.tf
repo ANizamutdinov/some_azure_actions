@@ -44,6 +44,7 @@ module "nsg" {
     }
   ]
 }
+
 resource "azurerm_subnet" "snet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
@@ -69,6 +70,10 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+resource "azurerm_network_interface_security_group_association" "nic_to_nsg" {
+  network_interface_id = azurerm_network_interface.nic.id
+  network_security_group_id = module.nsg.network_security_group_id
+}
 resource "azurerm_virtual_machine" "vm" {
   location              = azurerm_resource_group.rg.location
   name                  = join("-", ["vm", local.name_template])
