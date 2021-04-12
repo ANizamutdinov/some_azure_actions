@@ -9,7 +9,7 @@ stages:
         inputs:
           terraformVersion: '0.12.24'
       - task: TerraformTaskV1@0
-        displayName: terraform init
+        displayName:  init
         inputs:
           provider: 'azurerm'
           command: 'init'
@@ -20,6 +20,7 @@ stages:
           backendAzureRmContainerName: 'sumgantfstatecontainer'
           backendAzureRmKey: 'states/labstate.tfstate'
       - task: TerraformTaskV1@0
+        displayName: validate
         inputs:
           provider: 'azurerm'
           command: 'validate'
@@ -39,7 +40,7 @@ stages:
               inputs:
                 terraformVersion: '0.12.24'
             - task: TerraformTaskV1@0
-              displayName: terraform init
+              displayName: init
               inputs:
                 provider: 'azurerm'
                 command: 'init'
