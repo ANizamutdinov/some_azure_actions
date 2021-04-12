@@ -82,7 +82,7 @@ resource "azurerm_virtual_machine" "vm" {
     create_option = "Empty"
     lun           = 0
     name          = join("-", ["datadisk", local.name_template])
-    disk_size_gb = 16
+    disk_size_gb = 32
   }
    os_profile {
      admin_username = "sumgan"
