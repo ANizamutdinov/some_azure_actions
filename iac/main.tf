@@ -15,7 +15,7 @@ provider "azurerm" {
 
 locals {
   env           = "dev"
-  app           = "some_app"
+  app           = "app"
   name_template = "${local.env}-${local.app}"
 }
 
