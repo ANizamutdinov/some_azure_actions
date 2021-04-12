@@ -4,7 +4,7 @@ terraform {
 
 provider "azurerm" {
   skip_provider_registration = true
-  version = "2.55.0"
+  version                    = "2.55.0"
   features {}
 }
 
@@ -17,6 +17,19 @@ locals {
 resource "azurerm_resource_group" "rg" {
   location = "northeurope"
   name     = join("-", ["rg", local.env])
+}
+
+resource "azurerm_virtual_network" "vnet" {
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["172.19.0.0/27"]
+  name                = join("-", ["vnet", local.name_template])
+}
+
+resource "azurerm_subnet" "snet" {
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  name                 = join("-", ["snet", local.name_template])
 }
 
 resource "azurerm_public_ip" "pip" {
@@ -33,6 +46,7 @@ resource "azurerm_network_interface" "nic" {
   ip_configuration {
     name                          = "ifconfig"
     private_ip_address_allocation = "Dynamic"
+    subnet_id                     = azurerm_subnet.snet.id
   }
 }
 
