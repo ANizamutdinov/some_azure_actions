@@ -89,5 +89,8 @@ resource "azurerm_virtual_machine" "vm" {
      computer_name = join("-", ["host", local.name_template])
      admin_password = "kuH85mLsWjCFLQdV5Vl"
    }
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
 
 }
