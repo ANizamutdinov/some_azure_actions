@@ -3,6 +3,7 @@ terraform {
 }
 
 provider "azurerm" {
+  skip_provider_registration = true
   version = "2.55.0"
   features {}
 }
@@ -40,7 +41,7 @@ resource "azurerm_virtual_machine" "vm" {
   name                  = join("-", ["vm", local.name_template])
   network_interface_ids = [azurerm_network_interface.nic.id]
   resource_group_name   = azurerm_resource_group.rg.name
-  vm_size               = "Standard_B2s"
+  vm_size               = "Standard_B1s"
 
   storage_image_reference {
     publisher = "Canonical"
