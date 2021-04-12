@@ -31,6 +31,19 @@ resource "azurerm_virtual_network" "vnet" {
   name                = join("-", ["vnet", local.name_template])
 }
 
+module "nsg" {
+  source                = "Azure/network-security-group/azurerm"
+  resource_group_name   = azurerm_resource_group.rg.name
+  location              = azurerm_resource_group.rg.location
+  security_group_name   = join("-", ["nsg", local.name_template])
+  source_address_prefix = ["0.0.0.0/0"]
+  predefined_rules = [
+    {
+      name     = "HTTP"
+      priority = "300"
+    }
+  ]
+}
 resource "azurerm_subnet" "snet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
@@ -82,13 +95,13 @@ resource "azurerm_virtual_machine" "vm" {
     create_option = "Empty"
     lun           = 0
     name          = join("-", ["datadisk", local.name_template])
-    disk_size_gb = 32
+    disk_size_gb  = 32
   }
-   os_profile {
-     admin_username = "sumgan"
-     computer_name = join("-", ["host", local.name_template])
-     admin_password = "kuH85mLsWjCFLQdV5Vl"
-   }
+  os_profile {
+    admin_username = "sumgan"
+    computer_name  = join("-", ["host", local.name_template])
+    admin_password = "kuH85mLsWjCFLQdV5Vl"
+  }
   os_profile_linux_config {
     disable_password_authentication = false
   }
