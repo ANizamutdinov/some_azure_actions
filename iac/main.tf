@@ -79,4 +79,10 @@ resource "azurerm_virtual_machine" "vm" {
     name          = join("-", ["datadisk", local.name_template])
     disk_size_gb = 16
   }
+   os_profile {
+     admin_username = "sumgan"
+     computer_name = join("-", ["host", local.name_template])
+     admin_password = "kuH85mLsWjCFLQdV5Vl"
+   }
+
 }
