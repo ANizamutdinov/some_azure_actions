@@ -96,12 +96,12 @@ resource "azurerm_virtual_machine" "vm" {
     disk_size_gb      = 32
   }
 
-  storage_data_disk {
-    create_option = "Empty"
-    lun           = 0
-    name          = join("-", ["datadisk", local.name_template])
-    disk_size_gb  = 32
-  }
+//  storage_data_disk {
+//    create_option = "Empty"
+//    lun           = 0
+//    name          = join("-", ["datadisk", local.name_template])
+//    disk_size_gb  = 32
+//  }
   os_profile {
     admin_username = "sumgan"
     computer_name  = join("-", ["host", local.name_template])
