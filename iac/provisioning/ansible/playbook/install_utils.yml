@@ -12,8 +12,7 @@
 
   - name: Install utils
     apt:
-      state: latest
-      pkg:
+      name:
       - tree
       - python3
       - python3-pip
