@@ -41,6 +41,10 @@ module "nsg" {
     {
       name     = "HTTP"
       priority = "300"
+    },
+    {
+      name = "SSH"
+      priority = "310"
     }
   ]
 }
