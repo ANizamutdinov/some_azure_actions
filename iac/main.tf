@@ -117,8 +117,8 @@ resource "azurerm_virtual_machine" "vm" {
     connection {
       type     = "ssh"
       host     = azurerm_public_ip.pip.ip_address
-      user     = self.os_profile.*.admin_username
-      password = self.os_profile.*.admin_password
+      user     = element(self.os_profile.*.admin_username, 0)
+      password = element(self.os_profile.*.admin_password, 0)
       timeout  = "3m"
     }
     inline = ["date"]
