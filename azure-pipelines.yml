@@ -66,3 +66,9 @@ stages:
                 workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                 environmentServiceNameAzureRM: 'az-lab'
                 backendServiceArm: 'az-lab'
+            - task: Ansible@0
+              inputs:
+                ansibleInterface: 'agentMachine'
+                playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
+                inventoriesAgentMachine: 'file'
+                inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
