@@ -74,7 +74,7 @@ stages:
                     ansible-galaxy collection install community.docker
 
                     # Update python alternatives
-                    update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+                    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
               - task: Ansible@0
                 displayName: start_simple_container
                 inputs:
