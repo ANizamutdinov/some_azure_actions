@@ -66,6 +66,7 @@ stages:
         runOnce:
           deploy:
             steps:
+              - checkout: self
               - task: Ansible@0
                 inputs:
                   ansibleInterface: 'agentMachine'
