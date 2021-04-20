@@ -70,6 +70,7 @@ resource "azurerm_network_interface" "nic" {
   name                = join("-", ["nic", local.name_template])
   ip_configuration {
     name                          = "ifconfig"
+    public_ip_address_id          = azurerm_public_ip.pip.id
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = azurerm_subnet.snet.id
   }
@@ -118,23 +119,18 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = false
   }
 
-}
-
-resource "null_resource" "provisioning" {
+  provisioner "remote-exec" {
     connection {
       type     = "ssh"
       host     = azurerm_public_ip.pip.domain_name_label
-      user     = element(azurerm_virtual_machine.vm.os_profile.*.admin_username, 0)
-      password = element(azurerm_virtual_machine.vm.os_profile.*.admin_password, 0)
+      user     = element(self.os_profile.*.admin_username, 0)
+      password = element(self.os_profile.*.admin_password, 0)
       timeout  = "3m"
     }
-
-  provisioner "remote-exec" {
     inline = ["date"]
   }
 
   provisioner "local-exec" {
     command = "pwd && ls -l && cat ./apps/provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.fqdn}/g' ./apps/provisioning/ansible/inventory/inventory && cat ./apps/provisioning/ansible/inventory/inventory"
   }
-
 }
