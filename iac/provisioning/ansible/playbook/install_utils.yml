@@ -5,8 +5,11 @@
   become_user: sumgan
   gather_facts: no
   tasks:
-  - name: Install tree
+  - name: Update apt-cache
     apt:
       update_cache: true
+      cache_valid_time: 3600
+  - name: Install tree
+    apt:
       name: tree
       state: latest
