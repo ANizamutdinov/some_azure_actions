@@ -9,15 +9,15 @@
     apt:
       update_cache: true
       cache_valid_time: 3600
-
-  - name: Install requirements
+  - name: update python3
     apt:
-      name:
-        - tree
-        - python3
-        - python3-pip
+      name: python3
       state: latest
-
+  - name: update python3-pip
+    apt:
+      name: python3-pip
+      state: latest
   - name: Install docker SDK for python
     pip:
-      - docker
+      name: docker
+      state: latest
