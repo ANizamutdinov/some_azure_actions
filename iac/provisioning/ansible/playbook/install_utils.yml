@@ -1,4 +1,4 @@
-- hosts: *
+- hosts: docker_nodes
   remote_user: root
   sudo: yes
   sudo_user: azure-admin
