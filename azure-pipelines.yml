@@ -58,16 +58,8 @@ stages:
                   workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                   environmentServiceNameAzureRM: 'az-lab'
                   backendServiceArm: 'az-lab'
-    - deployment: Provision_VM
-      dependsOn: Allocate_VM
-      continueOnError: false
-      environment: 'dev'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-              - checkout: self
               - task: Ansible@0
+                displayName: provision
                 inputs:
                   ansibleInterface: 'agentMachine'
                   playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
