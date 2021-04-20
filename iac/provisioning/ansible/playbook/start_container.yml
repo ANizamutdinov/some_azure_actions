@@ -1,0 +1,13 @@
+- name: Start simple container
+  hosts: docker_nodes
+  remote_user: sumgan
+  become: yes
+  become_user: root
+  gather_facts: no
+  tasks:
+  - name: Container present
+    community.docker.docker_container:
+      name: mycontainer
+      state: present
+      image: ubuntu:14.04
+      command: sleep infinity

@@ -65,3 +65,10 @@ stages:
                   playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
                   inventoriesAgentMachine: 'file'
                   inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
+              - task: Ansible@0
+                displayName: start_simple_container
+                inputs:
+                  ansibleInterface: 'agentMachine'
+                  playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/start_container.yml'
+                  inventoriesAgentMachine: 'file'
+                  inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
