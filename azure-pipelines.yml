@@ -59,6 +59,7 @@ stages:
                   environmentServiceNameAzureRM: 'az-lab'
                   backendServiceArm: 'az-lab'
     - deployment: Provision_VM
+      dependsOn: Allocate_VM
       continueOnError: false
       environment: 'dev'
       strategy:
