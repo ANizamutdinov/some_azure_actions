@@ -17,6 +17,8 @@ locals {
   env           = "dev"
   app           = "app"
   name_template = "${local.env}-${local.app}"
+  username = "sumgan"
+  password = "kuH85mLsWjCFLQdV5Vl"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -111,9 +113,9 @@ resource "azurerm_virtual_machine" "vm" {
   //    disk_size_gb  = 32
   //  }
   os_profile {
-    admin_username = "sumgan"
     computer_name  = join("-", ["host", local.name_template])
-    admin_password = "kuH85mLsWjCFLQdV5Vl"
+    admin_username = local.username
+    admin_password = local.password
   }
   os_profile_linux_config {
     disable_password_authentication = false
@@ -123,8 +125,8 @@ resource "azurerm_virtual_machine" "vm" {
     connection {
       type     = "ssh"
       host     = azurerm_public_ip.pip.fqdn
-      user     = element(self.os_profile.*.admin_username, 0)
-      password = element(self.os_profile.*.admin_password, 0)
+      user     = local.username
+      password = local.password
       timeout  = "3m"
     }
     inline = ["date"]
