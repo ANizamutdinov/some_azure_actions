@@ -1,0 +1,9 @@
+- hosts: *
+  remote_user: root
+  sudo: yes
+  sudo_user: azure-admin
+  gather_facts: no
+  tasks:
+  - name: Install tree
+    apt: name=tree state=present
+    become_user: root
