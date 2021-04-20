@@ -9,7 +9,13 @@
     apt:
       update_cache: true
       cache_valid_time: 3600
-  - name: Install tree
+  - name: Install utils
     apt:
-      name: tree
       state: latest
+      pkg:
+      - tree
+      - python3
+      - python3-pip
+  - name: Install docker SDK for python
+    pip:
+      - docker
