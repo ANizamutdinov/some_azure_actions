@@ -1,7 +1,7 @@
 stages:
 - stage: validate
   jobs:
-    - job: validate
+    - job: Validate terraform
       continueOnError: false
       steps:
       - task: TerraformInstaller@0
@@ -27,48 +27,47 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
 - stage: deploy
   jobs:
-    - deployment: deploy_terraform
+    - deployment: Allocate VM
       continueOnError: false
       environment: 'dev'
       strategy:
-       runOnce:
-         deploy:
-          steps:
-            - checkout: self
-            - task: TerraformInstaller@0
-              displayName: terraform install
-              inputs:
-                terraformVersion: '0.12.24'
-            - task: TerraformTaskV1@0
-              displayName: init
-              inputs:
-                provider: 'azurerm'
-                command: 'init'
-                workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
-                backendServiceArm: 'az-lab'
-                backendAzureRmResourceGroupName: 'rg-tfstate'
-                backendAzureRmStorageAccountName: 'sumgantfstatelab'
-                backendAzureRmContainerName: 'sumgantfstatecontainer'
-                backendAzureRmKey: 'labstate.tfstate'
-#            - task: TerraformTaskV1@0
-#              displayName: Destroy VM
-#              inputs:
-#                provider: 'azurerm'
-#                command: 'destroy'
-#                workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
-#                environmentServiceNameAzureRM: 'az-lab'
-#                commandOptions: '-target=azurerm_virtual_machine.vm'
-            - task: TerraformTaskV1@0
-              displayName: apply
-              inputs:
-                provider: 'azurerm'
-                command: 'apply'
-                workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
-                environmentServiceNameAzureRM: 'az-lab'
-                backendServiceArm: 'az-lab'
-            - task: Ansible@0
-              inputs:
-                ansibleInterface: 'agentMachine'
-                playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
-                inventoriesAgentMachine: 'file'
-                inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: TerraformInstaller@0
+                displayName: terraform install
+                inputs:
+                  terraformVersion: '0.12.24'
+              - task: TerraformTaskV1@0
+                displayName: init
+                inputs:
+                  provider: 'azurerm'
+                  command: 'init'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
+                  backendServiceArm: 'az-lab'
+                  backendAzureRmResourceGroupName: 'rg-tfstate'
+                  backendAzureRmStorageAccountName: 'sumgantfstatelab'
+                  backendAzureRmContainerName: 'sumgantfstatecontainer'
+                  backendAzureRmKey: 'labstate.tfstate'
+              - task: TerraformTaskV1@0
+                displayName: apply
+                inputs:
+                  provider: 'azurerm'
+                  command: 'apply'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
+                  environmentServiceNameAzureRM: 'az-lab'
+                  backendServiceArm: 'az-lab'
+    - deployment: Provision VM
+      continueOnError: false
+      environment: 'dev'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: Ansible@0
+                inputs:
+                  ansibleInterface: 'agentMachine'
+                  playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
+                  inventoriesAgentMachine: 'file'
+                  inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
