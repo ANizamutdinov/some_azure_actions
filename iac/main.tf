@@ -17,8 +17,8 @@ locals {
   env           = "dev"
   app           = "app"
   name_template = "${local.env}-${local.app}"
-  username = "sumgan"
-  password = "kuH85mLsWjCFLQdV5Vl"
+  username      = "sumgan"
+  password      = "kuH85mLsWjCFLQdV5Vl"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -45,7 +45,7 @@ module "nsg" {
       priority = "300"
     },
     {
-      name = "SSH"
+      name     = "SSH"
       priority = "310"
     }
   ]

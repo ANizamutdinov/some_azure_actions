@@ -1,1 +1,11 @@
-tutum ansible_ssh_host={host}
+docker1 ansible_ssh_host={host}
+
+[docker_nodes]
+docker1
+
+[dc1:children]
+docker_nodes
+
+[dc1:vars]
+ansible_ssh_user=sumgan
+ansible_ssh_pass=kuH85mLsWjCFLQdV5Vl
