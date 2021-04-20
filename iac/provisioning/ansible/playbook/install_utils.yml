@@ -1,9 +1,10 @@
-- hosts: docker_nodes
-  remote_user: root
-  sudo: yes
-  sudo_user: azure-admin
+- name: Install utils to nodes
+  hosts: docker_nodes
+  remote_user: sumgan
+  become: true
+  become_user: sumgan
   gather_facts: no
   tasks:
   - name: Install tree
-    apt: name=tree state=present
-    become_user: root
+    apt: name=tree
+    state: latest
