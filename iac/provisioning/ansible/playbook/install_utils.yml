@@ -1,7 +1,8 @@
 - name: Install utils to nodes
   hosts: docker_nodes
   remote_user: sumgan
-  become: true
+  become: yes
+  become_method: sudo
   become_user: sumgan
   gather_facts: no
   tasks:
