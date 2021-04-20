@@ -111,11 +111,14 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = false
   }
 
+}
+
+resource "null_resource" "provisioners" {
   provisioner "remote-exec" {
     connection {
       type     = "ssh"
-      user     = self.os_profile.admin_username
-      password = self.os_profile.admin_password
+      user     = azurerm_virtual_machine.vm.os_profile.admin_username
+      password = azurerm_virtual_machine.vm.os_profile.admin_password
       timeout = "3m"
     }
     inline = ["date"]
