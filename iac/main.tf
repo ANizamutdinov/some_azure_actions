@@ -122,7 +122,7 @@ resource "azurerm_virtual_machine" "vm" {
   provisioner "remote-exec" {
     connection {
       type     = "ssh"
-      host     = azurerm_public_ip.pip.domain_name_label
+      host     = azurerm_public_ip.pip.fqdn
       user     = element(self.os_profile.*.admin_username, 0)
       password = element(self.os_profile.*.admin_password, 0)
       timeout  = "3m"
