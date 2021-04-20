@@ -7,5 +7,6 @@
   tasks:
   - name: Install tree
     apt:
+      update_cache: true
       name: tree
       state: latest
