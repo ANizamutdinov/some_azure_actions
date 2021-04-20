@@ -1,7 +1,7 @@
 stages:
 - stage: validate
   jobs:
-    - job: Validate terraform
+    - job: Validate_terraform
       continueOnError: false
       steps:
       - task: TerraformInstaller@0
@@ -27,7 +27,7 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
 - stage: deploy
   jobs:
-    - deployment: Allocate VM
+    - deployment: Allocate_VM
       continueOnError: false
       environment: 'dev'
       strategy:
@@ -58,7 +58,7 @@ stages:
                   workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                   environmentServiceNameAzureRM: 'az-lab'
                   backendServiceArm: 'az-lab'
-    - deployment: Provision VM
+    - deployment: Provision_VM
       continueOnError: false
       environment: 'dev'
       strategy:
