@@ -1,1 +1,1 @@
-tutum1 ansible_ssh_host={host1}
+tutum ansible_ssh_host={host}
