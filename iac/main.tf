@@ -133,6 +133,6 @@ resource "azurerm_virtual_machine" "vm" {
   }
 
   provisioner "local-exec" {
-    command = "pwd && ls -l && cat ./apps/provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.fqdn}/g' ./apps/provisioning/ansible/inventory/inventory && cat ./apps/provisioning/ansible/inventory/inventory"
+    command = "pwd && ls -l && cat ./provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.fqdn}/g' ./provisioning/ansible/inventory/inventory && cat ./provisioning/ansible/inventory/inventory"
   }
 }
