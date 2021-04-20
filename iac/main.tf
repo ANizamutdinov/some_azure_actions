@@ -111,25 +111,18 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = false
   }
 
-}
-
-resource "null_resource" "provisioners" {
   provisioner "remote-exec" {
     connection {
       type     = "ssh"
-      user     = azurerm_virtual_machine.vm.os_profile.admin_username
-      password = azurerm_virtual_machine.vm.os_profile.admin_password
-      timeout = "3m"
+      host     = azurerm_public_ip.pip.ip_address
+      user     = self.os_profile.*.admin_username
+      password = self.os_profile.*.admin_password
+      timeout  = "3m"
     }
     inline = ["date"]
   }
 
   provisioner "local-exec" {
-    inline = [
-      "pwd && ls -l",
-      "cat ./apps/provisioning/ansible/inventory/inventory",
-      "sed -i 's/{host}/${azurerm_public_ip.pip.ip_address}/g' ./apps/provisioning/ansible/inventory/inventory",
-      "cat ./apps/provisioning/ansible/inventory/inventory",
-    ]
+    command = "pwd && ls -l && cat ./apps/provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.ip_address}/g' ./apps/provisioning/ansible/inventory/inventory && cat ./apps/provisioning/ansible/inventory/inventory"
   }
 }
