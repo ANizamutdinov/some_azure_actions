@@ -61,6 +61,7 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
   name                = join("-", ["pip", local.name_template])
+  domain_name_label   = join("-", ["wan", local.name_template])
 }
 
 resource "azurerm_network_interface" "nic" {
@@ -120,7 +121,7 @@ resource "azurerm_virtual_machine" "vm" {
   provisioner "remote-exec" {
     connection {
       type     = "ssh"
-      host     = azurerm_public_ip.pip.ip_address
+      host     = azurerm_public_ip.pip.domain_name_label
       user     = element(self.os_profile.*.admin_username, 0)
       password = element(self.os_profile.*.admin_password, 0)
       timeout  = "3m"
@@ -129,6 +130,6 @@ resource "azurerm_virtual_machine" "vm" {
   }
 
   provisioner "local-exec" {
-    command = "pwd && ls -l && cat ./apps/provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.ip_address}/g' ./apps/provisioning/ansible/inventory/inventory && cat ./apps/provisioning/ansible/inventory/inventory"
+    command = "pwd && ls -l && cat ./apps/provisioning/ansible/inventory/inventory && sed -i 's/{host}/${azurerm_public_ip.pip.fqdn}/g' ./apps/provisioning/ansible/inventory/inventory && cat ./apps/provisioning/ansible/inventory/inventory"
   }
 }
