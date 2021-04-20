@@ -71,7 +71,7 @@ resource "azurerm_network_interface" "nic" {
 }
 
 resource "azurerm_network_interface_security_group_association" "nic_to_nsg" {
-  network_interface_id = azurerm_network_interface.nic.id
+  network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = module.nsg.network_security_group_id
 }
 resource "azurerm_virtual_machine" "vm" {
@@ -96,12 +96,12 @@ resource "azurerm_virtual_machine" "vm" {
     disk_size_gb      = 32
   }
 
-//  storage_data_disk {
-//    create_option = "Empty"
-//    lun           = 0
-//    name          = join("-", ["datadisk", local.name_template])
-//    disk_size_gb  = 32
-//  }
+  //  storage_data_disk {
+  //    create_option = "Empty"
+  //    lun           = 0
+  //    name          = join("-", ["datadisk", local.name_template])
+  //    disk_size_gb  = 32
+  //  }
   os_profile {
     admin_username = "sumgan"
     computer_name  = join("-", ["host", local.name_template])
@@ -111,4 +111,22 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = false
   }
 
+  provisioner "remote-exec" {
+    connection {
+      type     = "ssh"
+      user     = self.os_profile.admin_username
+      password = self.os_profile.admin_password
+      timeout = "3m"
+    }
+    inline = ["date"]
+  }
+
+  provisioner "local-exec" {
+    inline = [
+      "pwd && ls -l",
+      "cat ./apps/provisioning/ansible/inventory/inventory",
+      "sed -i 's/{host}/${azurerm_public_ip.pip.ip_address}/g' ./apps/provisioning/ansible/inventory/inventory",
+      "cat ./apps/provisioning/ansible/inventory/inventory",
+    ]
+  }
 }
