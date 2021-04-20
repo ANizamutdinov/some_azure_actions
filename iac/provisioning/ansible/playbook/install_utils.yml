@@ -13,8 +13,9 @@
   - name: Install requirements
     apt:
       name:
-      - python3
-      - python3-pip
+        - tree
+        - python3
+        - python3-pip
       state: latest
 
   - name: Install docker SDK for python
