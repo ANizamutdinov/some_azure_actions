@@ -75,11 +75,13 @@ resource "azurerm_network_interface_security_group_association" "nic_to_nsg" {
   network_security_group_id = module.nsg.network_security_group_id
 }
 resource "azurerm_virtual_machine" "vm" {
-  location              = azurerm_resource_group.rg.location
-  name                  = join("-", ["vm", local.name_template])
-  network_interface_ids = [azurerm_network_interface.nic.id]
-  resource_group_name   = azurerm_resource_group.rg.name
-  vm_size               = "Standard_B1s"
+  location                         = azurerm_resource_group.rg.location
+  name                             = join("-", ["vm", local.name_template])
+  network_interface_ids            = [azurerm_network_interface.nic.id]
+  resource_group_name              = azurerm_resource_group.rg.name
+  vm_size                          = "Standard_B1s"
+  delete_os_disk_on_termination    = true
+  delete_data_disks_on_termination = true
 
   storage_image_reference {
     publisher = "Canonical"
