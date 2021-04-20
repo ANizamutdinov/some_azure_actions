@@ -51,6 +51,14 @@ stages:
                 backendAzureRmContainerName: 'sumgantfstatecontainer'
                 backendAzureRmKey: 'labstate.tfstate'
             - task: TerraformTaskV1@0
+              displayName: Destroy VM
+              inputs:
+                provider: 'azurerm'
+                command: 'destroy'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
+                environmentServiceNameAzureRM: 'az-lab'
+                commandOptions: '-target=azurerm_virtual_machine.vm'
+            - task: TerraformTaskV1@0
               displayName: apply
               inputs:
                 provider: 'azurerm'
@@ -58,7 +66,3 @@ stages:
                 workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                 environmentServiceNameAzureRM: 'az-lab'
                 backendServiceArm: 'az-lab'
-                backendAzureRmResourceGroupName: 'rg-tfstate'
-                backendAzureRmStorageAccountName: 'sumgantfstatelab'
-                backendAzureRmContainerName: 'sumgantfstatecontainer'
-                backendAzureRmKey: 'labstate.tfstate'
