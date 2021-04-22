@@ -7,7 +7,6 @@
   tasks:
   - name: Container present
     community.docker.docker_container:
-      name: mycontainer
-      state: present
-      image: ubuntu:14.04
-      command: sleep infinity
+      name: tutum
+      state: started
+      image: tutum/hello-world
