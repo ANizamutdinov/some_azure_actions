@@ -62,6 +62,7 @@ module "lb" {
   source              = "Azure/loadbalancer/azurerm"
   resource_group_name = azurerm_resource_group.rg.name
   prefix              = local.name_template
+  lb_sku             = "Standard"
 
   type                = "public"
   frontend_name       = join("-", ["lbfe", local.name_template])
