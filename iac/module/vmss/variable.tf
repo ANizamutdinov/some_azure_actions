@@ -4,9 +4,11 @@ variable "module" {}
 variable "node_size" {}
 variable "subnet_id" {}
 variable "nsg_id" {}
-variable "tags" {}
 variable "username" {}
 variable "password" {}
+variable "tags" {
+  default = {}
+}
 variable "data_disk_type" {
   default = ""
 }
