@@ -66,7 +66,6 @@ module "lb" {
 
   type                = "public"
   frontend_name       = join("-", ["lbfe", local.name_template])
-  frontend_subnet_id  = azurerm_subnet.snet.id
   allocation_method   = "Static"
   pip_sku             = "Standard"
 
