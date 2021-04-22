@@ -21,6 +21,7 @@
     apt:
       name: docker.io
       state: latest
+  - name: verify docker service is started
     service:
       name: docker
       state: started
