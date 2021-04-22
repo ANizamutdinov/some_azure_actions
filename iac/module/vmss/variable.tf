@@ -3,6 +3,7 @@ variable "environment" {}
 variable "module" {}
 variable "node_size" {}
 variable "subnet_id" {}
+variable "be_pool_id" {}
 variable "nsg_id" {}
 variable "username" {}
 variable "password" {}
@@ -14,9 +15,6 @@ variable "data_disk_type" {
 }
 variable "data_disks" {
   default = {}
-}
-variable "be_pool_id" {
-  default = ""
 }
 variable "node_image" {
   default = ""

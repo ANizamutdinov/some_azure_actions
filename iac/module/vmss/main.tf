@@ -49,10 +49,10 @@ resource "azurerm_network_interface_security_group_association" "docker" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "docker" {
-  count                   = var.be_pool_id != "" ? var.node_count : 0
+  count                   = var.node_count
   backend_address_pool_id = var.be_pool_id
   ip_configuration_name   = "ipconfig"
-  network_interface_id    = element(azurerm_network_interface.docker[*].id, count.index)
+  network_interface_id    = element(azurerm_network_interface.docker.*.id, count.index)
 }
 
 // Create virtual machines
