@@ -43,12 +43,7 @@ stages:
                 displayName: Install requirements
                 inputs:
                   targetType: 'inline'
-                  script: |
-                    # Install community docker module for Ansible
-                    ansible-galaxy collection install community.docker
-
-                    # Update python alternatives
-                    # sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+                  script: 'ansible-galaxy collection install community.docker'
               - task: TerraformTaskV1@0
                 displayName: init
                 inputs:
