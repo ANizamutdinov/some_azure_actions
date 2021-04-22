@@ -10,3 +10,4 @@
       name: tutum
       state: started
       image: tutum/hello-world
+      ports: 80:80
