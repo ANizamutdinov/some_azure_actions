@@ -5,9 +5,15 @@
   become_user: root
   gather_facts: no
   tasks:
-  - name: Container present
+  - name: Start Helloworld container
     community.docker.docker_container:
       name: tutum
       state: started
       image: tutum/hello-world
       ports: 80:80
+  - name: Start Healthcheck container
+    community.docker.docker_container:
+      name: tutum
+      state: started
+      image: sumgan/pyhcheck
+      ports: 8080:8080
