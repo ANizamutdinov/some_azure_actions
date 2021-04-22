@@ -58,6 +58,20 @@ module "nsg" {
   ]
 }
 
+module "lb" {
+  source = "Azure/loadbalancer/azurerm"
+  resource_group_name = azurerm_resource_group.rg.name
+  prefix = local.name_template
+
+  lb_port = {
+    http = ["80", "Tcp", "80"]
+  }
+
+  lb_probe = {
+    http = ["Http", "8080", "/healthy"]
+  }
+}
+
 module "docker_vms" {
   source              = "./module/vmss"
   resource_group_name = azurerm_resource_group.rg.name
@@ -69,5 +83,6 @@ module "docker_vms" {
   node_count          = 2
   password            = local.password
   username            = local.username
+  data_disks          = { 1 = 32 }
   tags                = {}
 }
