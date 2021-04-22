@@ -1,7 +1,6 @@
-docker1 ansible_ssh_host={host}
 
 [docker_nodes]
-docker1
+
 
 [dc1:children]
 docker_nodes
