@@ -105,6 +105,7 @@ resource "azurerm_virtual_machine" "docker" {
 }
 
 resource "null_resource" "provisioners" {
+  depends_on = [azurerm_virtual_machine.docker]
   count = var.node_count
 
   triggers = {
