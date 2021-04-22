@@ -106,7 +106,7 @@ resource "azurerm_virtual_machine" "docker" {
 
 resource "null_resource" "provisioners" {
   depends_on = [azurerm_virtual_machine.docker]
-  count = var.node_count
+  count      = var.node_count
 
   triggers = {
     always = timestamp()
@@ -129,7 +129,7 @@ resource "null_resource" "provisioners" {
     command = "sed -i '1i ${join("-", ["host", local.name_template, format("%02d", count.index + 1)])} ansible_ssh_host=${element(azurerm_public_ip.docker.*.fqdn, count.index)}' ./provisioning/ansible/inventory/inventory"
   }
   provisioner "local-exec" {
-    command = "sed '/^[docker_nodes]$/a ${join("-", ["host", local.name_template, format("%02d", count.index + 1)])}' ./provisioning/ansible/inventory/inventory"
+    command = "sed '/^[docker_nodes]/a ${join("-", ["host", local.name_template, format("%02d", count.index + 1)])}' ./provisioning/ansible/inventory/inventory"
   }
   provisioner "local-exec" {
     command = "cat ./provisioning/ansible/inventory/inventory"
