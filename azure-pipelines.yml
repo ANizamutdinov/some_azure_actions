@@ -39,6 +39,16 @@ stages:
                 displayName: terraform install
                 inputs:
                   terraformVersion: '0.12.24'
+              - task: Bash@3
+                displayName: Install requirements
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    # Install community docker module for Ansible
+                    ansible-galaxy collection install community.docker
+
+                    # Update python alternatives
+                    # sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
               - task: TerraformTaskV1@0
                 displayName: init
                 inputs:
@@ -65,16 +75,6 @@ stages:
                   playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
                   inventoriesAgentMachine: 'file'
                   inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
-              - task: Bash@3
-                displayName: Install requirements
-                inputs:
-                  targetType: 'inline'
-                  script: |
-                    # Install community docker module for Ansible
-                    ansible-galaxy collection install community.docker
-
-                    # Update python alternatives
-                    # sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
               - task: Ansible@0
                 displayName: start_simple_container
                 inputs:

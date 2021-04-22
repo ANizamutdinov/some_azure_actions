@@ -17,6 +17,13 @@
     apt:
       name: python3-pip
       state: latest
+  - name: update docker.io
+    apt:
+      name: docker.io
+      state: latest
+    service:
+      name: docker
+      state: started
   - name: Install docker SDK for python
     pip:
       name: docker
