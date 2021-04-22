@@ -111,11 +111,11 @@ resource "null_resource" "provisioners" {
     always = timestamp()
   }
   connection {
-    type           = "ssh"
-    host           = element(azurerm_public_ip.docker.*.fqdn, count.index)
-    admin_username = var.username
-    admin_password = var.password
-    timeout        = "3m"
+    type     = "ssh"
+    host     = element(azurerm_public_ip.docker.*.fqdn, count.index)
+    user     = var.username
+    password = var.password
+    timeout  = "3m"
   }
   provisioner "remote-exec" {
     inline = ["date"]
