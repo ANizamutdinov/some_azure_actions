@@ -21,29 +21,17 @@ locals {
   password      = "kuH85mLsWjCFLQdV5Vl"
 }
 
-resource "azurerm_resource_group" "rg" {
-  location = var.LOCATION
-  name     = join("-", ["rg", local.env])
-}
-
-resource "azurerm_virtual_network" "vnet" {
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  address_space       = ["172.19.0.0/24"]
-  name                = join("-", ["vnet", local.name_template])
-}
-
-resource "azurerm_subnet" "snet" {
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  name                 = join("-", ["snet", local.name_template])
-  address_prefixes     = ["172.19.0.32/27"]
+module "foundations" {
+  source = "./module/foundations"
+  LOCATION = var.LOCATION
+  env = local.env
+  name_template = local.name_template
 }
 
 module "nsg" {
   source                = "Azure/network-security-group/azurerm"
-  resource_group_name   = azurerm_resource_group.rg.name
-  location              = azurerm_resource_group.rg.location
+  resource_group_name   = module.foundations.rg.name
+  location              = module.foundations.rg.location
   security_group_name   = join("-", ["nsg", local.name_template])
   source_address_prefix = ["0.0.0.0/0"]
   predefined_rules = [
@@ -60,7 +48,7 @@ module "nsg" {
 
 module "lb" {
   source              = "Azure/loadbalancer/azurerm"
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = module.foundations.rg.name
   prefix              = local.name_template
   lb_sku             = "Standard"
 
@@ -80,10 +68,10 @@ module "lb" {
 
 module "docker_vms" {
   source              = "./module/vmss"
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = module.foundations.rg.name
   environment         = local.env
   module              = local.app
-  subnet_id           = azurerm_subnet.snet.id
+  subnet_id           = module.foundations.snet.id
   nsg_id              = module.nsg.network_security_group_id
   be_pool_id          = module.lb.azurerm_lb_backend_address_pool_id
   node_size           = "Standard_B1s"
