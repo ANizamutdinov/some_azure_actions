@@ -22,7 +22,7 @@ locals {
 }
 
 resource "azurerm_resource_group" "rg" {
-  location = "northeurope"
+  location = var.location
   name     = join("-", ["rg", local.env])
 }
 

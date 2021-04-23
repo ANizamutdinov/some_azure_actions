@@ -36,16 +36,16 @@ stages:
             steps:
               - checkout: self
               - task: TerraformInstaller@0
-                displayName: terraform install
+                displayName: Install terraform
                 inputs:
                   terraformVersion: '0.12.24'
               - task: Bash@3
-                displayName: Install requirements
+                displayName: Install ansible requirements
                 inputs:
                   targetType: 'inline'
                   script: 'ansible-galaxy collection install community.docker'
               - task: TerraformTaskV1@0
-                displayName: init
+                displayName: Terraform init
                 inputs:
                   provider: 'azurerm'
                   command: 'init'
@@ -56,7 +56,7 @@ stages:
                   backendAzureRmContainerName: 'sumgantfstatecontainer'
                   backendAzureRmKey: 'labstate.tfstate'
               - task: TerraformTaskV1@0
-                displayName: apply
+                displayName: Terraform apply
                 inputs:
                   provider: 'azurerm'
                   command: 'apply'
@@ -64,14 +64,14 @@ stages:
                   environmentServiceNameAzureRM: 'az-lab'
                   backendServiceArm: 'az-lab'
               - task: Ansible@0
-                displayName: provision
+                displayName: Ansible provisioning
                 inputs:
                   ansibleInterface: 'agentMachine'
                   playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
                   inventoriesAgentMachine: 'file'
                   inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
               - task: Ansible@0
-                displayName: start_simple_container
+                displayName: Ansible start containers
                 inputs:
                   ansibleInterface: 'agentMachine'
                   playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/start_container.yml'
