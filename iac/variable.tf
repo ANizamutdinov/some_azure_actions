@@ -1,3 +1,3 @@
-variable "location" {
+variable "LOCATION" {
   default = "northeurope"
 }
