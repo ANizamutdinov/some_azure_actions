@@ -56,12 +56,13 @@ stages:
                   backendAzureRmContainerName: 'sumgantfstatecontainer'
                   backendAzureRmKey: 'labstate.tfstate'
               - task: TerraformTaskV1@0
-                displayName: Terraform destroy
+                displayName: Terraform create foundation resources
                 inputs:
                   provider: 'azurerm'
                   command: 'destroy'
                   workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                   environmentServiceNameAzureRM: 'az-lab'
+                  commandOptions: '-target=module.foundations'
                   backendServiceArm: 'az-lab'
               - task: TerraformTaskV1@0
                 displayName: Terraform apply
