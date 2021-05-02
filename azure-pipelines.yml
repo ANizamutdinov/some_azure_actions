@@ -56,33 +56,10 @@ stages:
                   backendAzureRmContainerName: 'sumgantfstatecontainer'
                   backendAzureRmKey: 'labstate.tfstate'
               - task: TerraformTaskV1@0
-                displayName: Terraform create foundation resources
+                displayName: Terraform destroy
                 inputs:
                   provider: 'azurerm'
                   command: 'destroy'
                   workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
                   environmentServiceNameAzureRM: 'az-lab'
-                  commandOptions: '-target=module.foundations'
                   backendServiceArm: 'az-lab'
-              - task: TerraformTaskV1@0
-                displayName: Terraform apply
-                inputs:
-                  provider: 'azurerm'
-                  command: 'apply'
-                  workingDirectory: '$(System.DefaultWorkingDirectory)/iac'
-                  environmentServiceNameAzureRM: 'az-lab'
-                  backendServiceArm: 'az-lab'
-              - task: Ansible@0
-                displayName: Ansible provisioning
-                inputs:
-                  ansibleInterface: 'agentMachine'
-                  playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/install_utils.yml'
-                  inventoriesAgentMachine: 'file'
-                  inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
-              - task: Ansible@0
-                displayName: Ansible start containers
-                inputs:
-                  ansibleInterface: 'agentMachine'
-                  playbookPathOnAgentMachine: 'iac/provisioning/ansible/playbook/start_container.yml'
-                  inventoriesAgentMachine: 'file'
-                  inventoryFileOnAgentMachine: 'iac/provisioning/ansible/inventory/inventory'
