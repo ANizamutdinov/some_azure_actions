@@ -1,1 +1,9 @@
-*/.terraform/
+
+.terraform/
+*.conf
+*.conf.hcl
+*.state.hcl
+*.tfplan
+*.tfstate*
+*.lock.hcl
+*.backend.hcl
