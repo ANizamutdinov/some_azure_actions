@@ -2,7 +2,7 @@ locals {
   name_template = join("-", [var.environment, var.module])
 }
 
-data "azurerm_resource_group" "docker" {
+data "azurerm_resource_group" "k3s" {
   name = var.resource_group_name
 }
 
@@ -15,11 +15,11 @@ resource "random_string" "disk_naming" {
 }
 
 //Create Public-IP
-resource "azurerm_public_ip" "docker" {
+resource "azurerm_public_ip" "k3s" {
   count               = var.node_count
   name                = join("-", ["pip", local.name_template, format("%02d", count.index + 1)])
-  location            = data.azurerm_resource_group.docker.location
-  resource_group_name = data.azurerm_resource_group.docker.name
+  location            = data.azurerm_resource_group.k3s.location
+  resource_group_name = data.azurerm_resource_group.k3s.name
   allocation_method   = "Static"
   sku                 = "Standard"
   domain_name_label   = join("-", ["wan", local.name_template, format("%02d", count.index + 1)])
@@ -27,50 +27,50 @@ resource "azurerm_public_ip" "docker" {
 }
 
 //Create network interface cards
-resource "azurerm_network_interface" "docker" {
+resource "azurerm_network_interface" "k3s" {
   count               = var.node_count
   name                = join("-", ["nic", local.name_template, format("%02d", count.index + 1)])
-  location            = data.azurerm_resource_group.docker.location
-  resource_group_name = data.azurerm_resource_group.docker.name
+  location            = data.azurerm_resource_group.k3s.location
+  resource_group_name = data.azurerm_resource_group.k3s.name
   tags                = var.tags
 
   ip_configuration {
     name                          = "ipconfig"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = element(azurerm_public_ip.docker.*.id, count.index)
+    public_ip_address_id          = element(azurerm_public_ip.k3s.*.id, count.index)
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "docker" {
+resource "azurerm_network_interface_security_group_association" "k3s" {
   count                     = var.node_count
-  network_interface_id      = element(azurerm_network_interface.docker.*.id, count.index)
+  network_interface_id      = element(azurerm_network_interface.k3s.*.id, count.index)
   network_security_group_id = var.nsg_id
 }
 
-resource "azurerm_network_interface_backend_address_pool_association" "docker" {
-  count                   = var.node_count
+resource "azurerm_network_interface_backend_address_pool_association" "k3s" {
+  count                   = var.be_pool_id != "" ? var.node_count : 0
   backend_address_pool_id = var.be_pool_id
   ip_configuration_name   = "ipconfig"
-  network_interface_id    = element(azurerm_network_interface.docker.*.id, count.index)
+  network_interface_id    = element(azurerm_network_interface.k3s.*.id, count.index)
 }
 
 // Create virtual machines
-resource "azurerm_virtual_machine" "docker" {
+resource "azurerm_virtual_machine" "k3s" {
   count                            = var.node_count
   name                             = join("-", ["vm", local.name_template, format("%02d", count.index + 1)])
-  location                         = data.azurerm_resource_group.docker.location
-  resource_group_name              = data.azurerm_resource_group.docker.name
-  network_interface_ids            = [element(azurerm_network_interface.docker.*.id, count.index)]
+  location                         = data.azurerm_resource_group.k3s.location
+  resource_group_name              = data.azurerm_resource_group.k3s.name
+  network_interface_ids            = [element(azurerm_network_interface.k3s.*.id, count.index)]
   vm_size                          = var.node_size
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
   tags                             = var.tags
 
   storage_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal-daily"
-    sku       = "20_04-daily-lts-gen2"
+    publisher = "Debian"
+    offer     = "debian-10-daily"
+    sku       = "10-gen2"
     version   = "latest"
   }
 
@@ -100,32 +100,26 @@ resource "azurerm_virtual_machine" "docker" {
   }
 
   os_profile_linux_config {
-    disable_password_authentication = false
-  }
-}
-
-resource "null_resource" "provisioners" {
-  depends_on = [azurerm_virtual_machine.docker]
-  count      = var.node_count
-
-  triggers = {
-    always = timestamp()
-  }
-  connection {
-    type     = "ssh"
-    host     = element(azurerm_public_ip.docker.*.fqdn, count.index)
-    user     = var.username
-    password = var.password
-    timeout  = "3m"
+    disable_password_authentication = true
+    ssh_keys {
+      key_data = file("~/.ssh/id_rsa.pub")
+      path     = format("/home/%s/.ssh/authorized_keys", var.username)
+    }
   }
   provisioner "remote-exec" {
-    inline = ["date"]
-  }
-
-  provisioner "local-exec" {
-    command = "sed -i '1i ${join("-", ["host", local.name_template, format("%02d", count.index + 1)])} ansible_ssh_host=${element(azurerm_public_ip.docker.*.fqdn, count.index)}' ./provisioning/ansible/inventory/inventory"
-  }
-  provisioner "local-exec" {
-    command = "sed -i '/^.docker_nodes./a ${join("-", ["host", local.name_template, format("%02d", count.index + 1)])}' ./provisioning/ansible/inventory/inventory"
+    connection {
+      type        = "ssh"
+      host        = element(azurerm_public_ip.k3s.*.fqdn, count.index)
+      user        = var.username
+      private_key = file("~/.ssh/id_rsa")
+      timeout     = "3m"
+    }
+    inline = [
+      format("echo '%s' | sudo -S -E date", var.password),
+      "sudo apt-get update -qq",
+      "sudo apt-get upgrade -yqq",
+      "sudo apt-get -y install curl htop iftop nload apt-transport-https",
+      format("sudo echo \"%s\tALL=(ALL:ALL)\tNOPASSWD:ALL\"| sudo tee -a /etc/sudoers", var.username),
+    ]
   }
 }

@@ -16,9 +16,10 @@ variable "data_disk_type" {
 variable "data_disks" {
   default = {}
 }
-variable "node_image" {
-  default = ""
-}
 variable "node_count" {
   default = 1
+}
+variable "lbfqdn" {
+  description = "fqdn of load-balancer"
+  default     = ""
 }

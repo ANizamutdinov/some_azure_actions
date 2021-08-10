@@ -1,3 +1,3 @@
 variable "env" {}
-variable "LOCATION" {}
+variable "location" {}
 variable "name_template" {}
