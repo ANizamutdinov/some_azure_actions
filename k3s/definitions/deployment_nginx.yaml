@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: nginx
+        tier: backend
+    spec:
+      volumes:
+      - name: shared-www-vol
+        emptyDir: {}
+      - name: nginx-config-vol
+        configMap:
+          name: nginx-config
+      containers:
+      - image: nginx:latest
+        name: nginx
+        volumeMounts:
+          - name: shared-www-vol
+            mountPath: /var/www/html
+          - name: nginx-config-vol
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf

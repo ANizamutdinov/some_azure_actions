@@ -46,11 +46,26 @@ module "nsg" {
     {
       name     = "SSH"
       priority = "310"
+    },
+    {
+      name     = "HTTP"
+      priority = "311"
+    },
+    {
+      name     = "HTTPS"
+      priority = "312"
     }
   ]
   custom_rules = [
     {
-      name                    = "HTTPS"
+      name                    = "HTTP_ADV"
+      priority                = "320"
+      direction               = "Inbound"
+      source_address_prefixes = ["0.0.0.0/0"]
+      destination_port_range  = "8080"
+    },
+    {
+      name                    = "KUBECTL"
       priority                = "330"
       direction               = "Inbound"
       source_address_prefixes = ["0.0.0.0/0"]
@@ -66,17 +81,38 @@ module "lb" {
   resource_group_name = module.foundations.rg.name
   prefix              = local.name_template
   lb_sku              = "Standard"
-  type              = "public"
-  frontend_name     = join("-", ["lbfe", local.name_template])
-  allocation_method = "Static"
-  pip_sku           = "Standard"
+  type                = "public"
+  frontend_name       = join("-", ["lbfe", local.name_template])
+  allocation_method   = "Static"
+  pip_sku             = "Standard"
 
   lb_port = {
-    http = ["6443", "Tcp", "6443"]
+    kubectl = ["6443", "Tcp", "6443"]
   }
 
   lb_probe = {
     http = ["Tcp", "6443", ""]
+  }
+}
+
+module "lb_wload" {
+  providers           = { azurerm = azurerm }
+  source              = "./module/lb"
+  resource_group_name = module.foundations.rg.name
+  prefix              = join("-", ["wload", local.name_template])
+  lb_sku              = "Standard"
+  type                = "public"
+  frontend_name       = join("-", ["wload", local.name_template])
+  allocation_method   = "Static"
+  pip_sku             = "Standard"
+
+  lb_port = {
+    http  = ["80", "Tcp", "80"]
+    https = ["443", "Tcp", "443"]
+  }
+
+  lb_probe = {
+    http = ["Tcp", "80", ""]
   }
 }
 
@@ -89,8 +125,8 @@ module "master_pool" {
   subnet_id           = module.foundations.snet.id
   nsg_id              = module.nsg.network_security_group_id
   be_pool_id          = module.lb.azurerm_lb_backend_address_pool_id
-  node_size           = "Standard_B1ms"
-  node_count          = 3
+  node_size           = "Standard_B2ms"
+  node_count          = 1
   password            = local.password
   username            = local.username
   data_disks          = {}
@@ -104,9 +140,9 @@ module "agent_pool" {
   module              = "k3sa"
   subnet_id           = module.foundations.snet.id
   nsg_id              = module.nsg.network_security_group_id
-  be_pool_id          = ""
+  be_pool_id          = module.lb_wload.azurerm_lb_backend_address_pool_id
   node_size           = "Standard_B1ms"
-  node_count          = 2
+  node_count          = 3
   password            = local.password
   username            = local.username
   data_disks          = {}

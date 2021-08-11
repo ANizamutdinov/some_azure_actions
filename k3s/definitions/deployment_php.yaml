@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php
+  labels:
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: php
+        tier: backend
+    spec:
+      volumes:
+      - name: shared-www-vol
+        emptyDir: {}
+
+      containers:
+      - image: sumgan/phphw:0.1.1
+        name: hwapp
+        volumeMounts:
+          - name: shared-www-vol
+            mountPath: /var/www/html
+        lifecycle:
+          postStart:
+            exec:
+              command: [ "/bin/sh", "-c", "cp -r /app/. /var/www/html" ]
