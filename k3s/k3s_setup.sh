@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function Allocate_vms() {
+function allocate_vms() {
   ##############
   # Allocate VMs
   ##############
