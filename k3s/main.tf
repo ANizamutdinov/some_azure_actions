@@ -15,7 +15,7 @@ provider "azurerm" {
 locals {
   env           = "dev"
   name_template = join("-", [local.env, "k3s"])
-  username      = "sumgan"
+  username      = var.username == "" ? "k3sadmin" : var.username
   password      = random_string.pass.result
 }
 
